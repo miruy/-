@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+
+<script>
+    // 구독자 정보, 데이터
+    var subscriber1 = {
+        email: "john@coldmail.com",
+        rec_count: 2
+    }
+
+    var subscriber2 = {
+        email: "sam@pmail.co",
+        rec_count: 16
+    }
+
+    var subscriber3 = {
+        email: "linda1989@oal.com",
+        rec_count: 1
+    }
+
+    var subscriber4 = {
+        email: "jan1940@ahoy.com",
+        rec_count: 0
+    }
+
+    var subscriber5 = {
+        email: "mrbig@pmail.co",
+        rec_count: 25
+    }
+
+    var subscriber6 = {
+        email: "lol@lol.lol",
+        rec_count: 0
+    }
+
+    // DB에서 구독자들 정보 불러오기, 액션
+    function fetchSubscriberFromDB() {
+        return [subscriber1, subscriber2, subscriber3, subscriber4, subscriber5, subscriber6];
+    }
+
+    // 쿠폰 정보, 데이터
+    var coupon1 = {
+        code: "10PERCENT",
+        rank : "bad"
+    }
+
+    var coupon2 = {
+        code: "MAYDISCOUNT",
+        rank : "good"
+    }
+
+    var coupon3 = {
+        code: "PROMOTION45",
+        rank : "best"
+    }
+
+    var coupon4 = {
+        code: "IHEARTYOU",
+        rank : "bad"
+    }
+
+    var coupon5 = {
+        code: "GETADEAL",
+        rank : "best"
+    }
+
+    var coupon6 = {
+        code: "ILIKEDISCOUNTS",
+        rank : "good"
+    }
+
+    // DB에서 쿠폰들 정보 불러오기, 액션
+    function fetchCouponFromDB(){
+        return [coupon1, coupon2, coupon3, coupon4, coupon5, coupon6];
+    }
+
+    // 회원의 등급을 결정하는 함수, 계산
+    function subCouponRank(subscriber) {    // 회원정보를 매개변수로 가짐
+        if (subscriber.rec_count > 10) {    // 회원정보 내 추천수 값이 10 이상이라면
+            return "best";  // best 등급의 회원
+        } else {
+            return "good";  // 아니라면 good 등급의 회원
+        }
+    }
+
+    // 쿠폰의 등급을 결정하는 함수, 계산
+    function selectCouponsByRank(coupons, rank) {   // 쿠폰들과 쿠폰 등급을 매개변수로 가짐
+        var ret = [];
+        for (var c = 0; c < coupons.length; c++){   // 쿠폰들의 갯수만큼 반복함
+            var coupon = coupon[c]; // 쿠폰들 안에서 꺼낸 각각의 쿠폰을 coupon 객체에 담음
+            if (coupon.rank === rank){  // 꺼낸 쿠폰의 등급이 매개변수로 받은 등급과 같다면
+                ret.push(coupon.code);  // 쿠폰의 이름을 빈 배열에 넣음
+            }
+            return ret; // 채워진 배열(쿠폰)을 리턴
+        }
+    }
+
+    // 이메일, 데이터
+    var message = {
+        from: "newsletter@coupondog.com",
+        to: "dbflarla4966@naver.com",
+        subject: "Your weekly coupons inside",
+        body: "Here are your coupons ..."
+    }
+
+    // 특정 등급의 회원에게 특정 등급의 쿠폰을 담아 발송할 이메일 생성 함수, 계산
+    function createEmailForSubscriber(subscriber, bests, goods) {
+        var rank = subCouponRank(subscriber);   // 매개변수로 받은 회원의 등급을 결정
+        if (rank === "best"){   // 회원의 등급이 best라면 best 쿠폰 이메일 내용
+            return {
+                from: "newsletter@coupondog.com",
+                to: subscriber.email,
+                subject: "Your BEST weekly coupons inside",
+                body: "Here are the best coupons: " + bests.join(", ")
+            };
+        } else {    // 회원의 등급이 good이라면 good 쿠폰 이메일 내용
+            return {
+                from: "newsletter@coupondog.com",
+                to: subscriber.email,
+                subject: "Your GOOD weekly coupons inside",
+                body: "Here are the good coupons: " + goods.join(", ")
+            };
+        }
+    }
+
+    // 발송할 이메일 목록 생성 함수, 계산
+    function emailListForSubscribers(subscribers, bests, goods){
+        var emails = [];
+        for (var s = 0; s < subscribers.length; s++){   // 회원 목록 만큼 반복
+            var subscriber = subscriber[s]; // 회원 목록에서 꺼낸 각각의 회원을 subscriber 객체에 담음
+            var email = createEmailForSubscriber(subscriber, goods, bests); // 각각의 회원정보와 best, good 쿠폰 정보들을 매개변수로 이용해 등급을 결정하는 함수 호출
+            emails.push(email); // 등급과 내용이 정해진 이메일을 이메일 목록 객체(빈 배열)에 담음
+        }
+        return emails;
+    }
+
+    // 이메일 보내기 함수, 액션
+    var emailSystem = {
+        send: function (email) {
+            console.log(`발신 : ${email.from}`)
+            console.log(`수신 : ${email.to}`)
+            console.log(`제목 : ${email.subject}`)
+            console.log(`내용 : ${email.body}`)
+        }
+    }
+
+    // 쿠폰 정책 실행 함수, 액션
+    function sendIssue() {
+        var coupons = fetchCouponFromDB();
+        var subscribers = fetchSubscriberFromDB();
+        var bestCoupons = selectCouponsByRank(coupons, "best");
+        var goodCoupons = selectCouponsByRank(coupons, "goods");
+        var emails = emailListForSubscribers(subscribers, bestCoupons, goodCoupons);
+        for (var e = 0; i < emails.length; e++){
+            var email = emails[e];
+            emailSystem.send(email);
+        }
+    }
+
+    sendIssue();
+
+
+
+</script>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+
+<script>
+
+    /*
+        서브루틴 추출하기
+
+        암묵적인 입력과 출력을 제거하여
+            모두 액션 ->  액션, 계산, 데이터
+                                      로 분리하기
+    */
+
+
+    var shopping_cart = []; // 장바구니 제품, 전역변수=액션
+    var shopping_cart_total = 0;    // 장바구니 금액 합계, 액션
+
+    // 장바구니에 제품 추가 및 금액 합계 업데이트 함수, 액션
+    function add_item_to_cart(name, price) {
+        var item = make_cart_item(name, price);
+       shopping_cart = add_item(shopping_cart, item);
+       cal_cart_total(shopping_cart);   // 장바구니에 제품 추가로 인한 금액 합계 업데이트 함수 호출
+        var total = calc_total(cart);   // 장바구니 금액 합계 계산 함수 호출, calc_total()의 반환값(지역변수)을 전역변수에 담음
+        set_cart_total_dom(total);   // 금액 합계를 반영하기 위한 웹페이지 변경 함수 호출
+        update_shipping_icons(cart);    // 무료배송 여부 확인 함수 호출
+        update_tax_dom(total);   // 세금 업데이트 함수 호출
+    }
+
+    // 장바구니 구조 함수를 커넥트 하는 함수, 계산
+    function add_item(cart, item) {
+        return add_element_last(cart, item);
+    }
+
+    // 장바구니 구조만 알고 있는 함수, 계산 -> 일반적인 이름으로 변경
+    function add_element_last(array, elem){
+        var new_array = array.slice();    // 배열을 잘라서 복사
+        new_array.push(elem);
+        return new_array;    // 복사본을 반환
+    }
+
+    // add_item()에서 item을 분리하여 제품 구조만 알고 있는 함수, 계산
+    function make_cart_item(name, price) {
+        return {
+            name: name,
+            price: price
+        }
+    }
+
+    // 장바구니 금액 합계 계산 함수, 계산
+    function calc_total(cart){  // 전역변수를 인자로 넣음으로써 명시적 입력
+        var total = 0;  // 전역변수를 지역변수로 변경
+        for (var i = 0; i < cart.length; i++){ // 장바구니 제품 갯수만큼 반복
+            var item = cart[i];    // 각각의 장바구니 제품을 item객체에 담음
+            total += item.price;  // 장바구니 각 제품의 가격을 누적하여 더함
+        }
+        return total;   // 지역변수 반환, 명시적 출력
+    }
+
+    // 장바구니 금액 합계에 세금 추가하는 함수, 액션
+    function update_tax_dom(total){
+        var update_shopping_cart_total = update_tax(total);
+        set_tax_dom(update_shopping_cart_total);    // 장바구니 금액 합계에 세금을 추가해 DOM 업데이트
+    }
+
+    // 연습문제 1. 기존 세금 계산 함수(액션)에서 계산을 분리하기, 계산
+    function update_tax(total){
+        var new_total = total;
+        return new_total * 0.10;
+    }
+
+    // 장바구니 금액 합계가 20이 넘으면 무료배송 아이콘 보여주기 함수, 액션
+    function update_shipping_icons(cart) {
+        var buy_buttons = get_buy_buttons_dom();    // 페이지에 있는 모든 구매버튼을 가져와 반복문에 적용
+        for (var i = 0; i < buy_buttons.length; i++){
+            var button = buy_buttons[i];
+            var item = button.item; // 가져온 각 버튼의 제품을 가져옴
+            var hasFreeShipping = gets_free_shipping_with_item(cart, item);
+            set_free_shipping_icon(button, hasFreeShipping);
+        }
+    }
+
+    function gets_free_shipping_with_item(cart, item){
+        var new_cart = add_item(cart, item);
+        return checkingForFree(new_cart);
+    }
+
+    function set_free_shipping_icon(button, isShown){
+        if (isShown){    // 제품의 가격과 기존 장바구니 금액 합계를 더했을 때 20이 넘으면
+            button.show_free_shipping_icon();   // 무료배송 아이콘 보여주기 함수 호출
+        }else{
+            button.hide_free_shipping_icon();   // 무료배송 아이콘 숨기기 함수 호출
+        }
+    }
+    // 연습문제 2. 무료배송인지 확인하는 함수(액션)에서 게산을 분리하기, 계산
+    function checkingForFree(cart){
+        return calc_total(cart) >= 20;
+    }
+
+    // 장바구니 제품 삭제 및 장바구니 업데이트 함수, 액션
+    function delete_handler(name) {
+        shopping_cart = remove_item_by_name(shopping_cart, name);
+        var total = calc_total(shopping_cart);
+        set_cart_total_dom(total);
+        update_shipping_icons(shopping_cart);
+        update_tax_dom(total);
+    }
+
+    // 이름으로 장바구니 속 제품을 검색하여 제품 삭제하는 함수 -> (copy_on_write 적용)
+    function remove_item_by_name(cart, name) {
+        var idx = null;
+        for (var i = 0; i < cart.length; i++){
+            if (cart[i].name === name){
+                idx = i;
+            }
+        }
+        if (idx !== null)
+            return removeItems(cart, idx, 1); // splice() : 배열에서 항목을 삭제하는 함수, idx 위치의 항목을 1개 삭제, // copy_on_write 2.복사본 사용하기
+        return cart;
+
+    }
+
+    // 제품 삭제 함수
+    function removeItems(array, idx, count) {
+        var copy = array.slice();
+        copy.splice(idx, count);   // idx 위치의 항목을 count개 삭제
+        return copy;
+    }
+
+
+
+
+</script>
+</html>

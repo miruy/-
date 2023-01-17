@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+
+<script>
+
+    // 연습문제. push()를 copy_on_write 버전으로 만들기
+    // push() : 배열 끝에 항목 추가
+    function push(array, elem){
+        var copy_array = array.slice();
+        copy_array.push(elem);
+        return copy_array;
+    }
+
+    // 연습문제. 위에서 만든 copy_on_write 버전 push()를 사용해 add_contact()함수 리펙터링하기
+    function  add_contact(mailing_list, email){
+        return push(mailing_list, email);
+    }
+
+    // 연습문제. 아래의 동작을 copy_on_write 버전으로 설정하는 함수 만들기
+    a[15] = 2;  // 배열 a의 index 15번째에 2를 저장
+    function arraySet(array, idx, value){
+        var copy_array = array.slice();
+        copy_array[idx] = value;
+        return copy_array;
+    }
+
+
+
+</script>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+
+<script>
+
+    /* 자바스크립트 배열 훑어보기 */
+
+    // 인덱스로 값 찾기 [idx]
+    var array1 = [1,2,3,4];
+    console.log(array1[2]);  // 3
+
+    // 배열 앞에 추가하기 .unshift(el)
+    var array2 = [1,2,3,4];
+    array2.unshift(10);
+    console.log(array2);    // [10, 1, 2, 3, 4]
+
+    // 값 할당하기 [] =
+    var array3 = [1,2,3,4];
+    array3[2] = "abc";
+    console.log(array3);    // [1, 2, 'abc', 4]
+
+    // 앞에 있는 값을 지우기 .shift()
+    var array4 = [1,2,3,4];
+    array4.shift();
+    console.log(array4);    // [2, 3, 4]
+
+    // 길이 .length
+    var array5 = [1,2,3,4];
+    console.log(array5.length); // 4
+
+    // 배열 얉게 복사하기 .slice()
+    var array6 = [1,2,3,4];
+    var copy = array6.slice();
+    console.log(copy);  // [1, 2, 3, 4]
+
+    // 끝에 추가하기 .push(el)
+    var array7 = [1,2,3,4];
+    array7.push(10);
+    console.log(array7);    // [1, 2, 3, 4, 10]
+
+    // 항목 삭제하기 .splice(idx, num)
+    var array8 = [1,2,3,4,5,6];
+    console.log(array8.splice(2, 3));    // index 2부터 3개의 항목을 삭제해라 return [3, 4, 5]
+    console.log(array8);    // [1, 2, 6]
+
+    // 끝에 있는 값 지우기 .pop()
+    var array9 = [1,2,3,4];
+    console.log(array9.pop());  // 4
+    console.log(array9);    // [1, 2, 3]
+
+</script>
+</html>

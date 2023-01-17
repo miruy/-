@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+
+<script>
+
+    /* 읽기와 쓰기를 동시에 하는 동작 -> 읽기 / 쓰기로 각각 분리하기 */
+
+    // shift() : 앞의 값을 삭제하는 함수로 읽기와 쓰기를 동시에 함
+    var a =[1,2,3,4];
+    var b = a.shift();
+    console.log(b); // 1, 값을 변경함과 동시에 첫번째 값을 읽어옴(읽고쓰기)
+    console.log(a); // [2,3,4]
+
+    // 1. 함수를 읽기 / 쓰기로 분리하기
+    // shift()의 읽기 기능, 배열의 0번째 값 불러오기
+    function first_element(array) {
+        return array[0];
+    }
+
+    // shift()의 쓰기 기능, copy_on_write 적용
+    function drop_first(array) {
+        var array_copy = array.slice();
+        array_copy.shift();
+        return array_copy;
+    }
+
+    // 2-1. 값을 두개 리턴하는 함수로 만들기
+    // - 동작 감싸기
+    function shift(array){
+        return array.shift();
+    }
+
+    // - 읽으면서 쓰기도 하는 함수를 읽기 함수로 바꾸기
+    function shift(array){
+        var array_copy = array.slice();
+        var first = array_copy.shift();
+        return {
+            first: first,
+            array: array_copy
+        };
+    }
+
+    // 2-2. 값을 두개 리턴하는 함수로 만들기
+    // - (동작 감싸기 후) 두값을 객체로 조합하기
+    function shift(array){
+        return {
+            first: first_element(array),
+            array: drop_first(array)
+        };
+    }
+
+    // 연습문제. pop()를 두가지 동작방식을 이용해 읽기 함수로 바꾸기
+
+    // pop() : 배열의 끝 수를 삭제하는 함수
+    var a = [1, 2, 3, 4];
+    var b = a.pop();
+    console.log(b); // 4
+    console.log(a); // [1,2,3]
+
+    // 1. 읽기 함수와 쓰기 함수로 분리하기
+
+    // - 읽기함수
+    function last_element(array){
+        return array[-1];
+    }
+
+    // - 쓰기함수, copy_on_write 적용
+    function drop_last(array){
+        var copy_pop = array.slice();
+        copy_pop.pop();
+        return copy_pop;
+    }
+
+    // 2-1. 값 두개를 리턴하는 함수로 만들기
+    function pop(array){
+        var copy_pop = array.slice();
+        var last = copy_pop.pop();
+        return {
+            last: last,
+            array: copy_pop
+        };
+    }
+
+    // 2-2. 값 두개를 리턴하는 함수로 만들기(읽기/쓰기 분리함수 사용)
+    function pop(array){
+        return {
+            last: last_element(array),
+            array: drop_last(array)
+        };
+    }
+
+</script>
+</html>

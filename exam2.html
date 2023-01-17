@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+
+<script>
+
+    // 연습문제. pop()를 두가지 동작방식을 이용해 읽기 함수로 바꾸기
+
+    // pop() : 배열의 끝 수를 삭제하는 함수
+    var a = [1, 2, 3, 4];
+    var b = a.pop();
+    console.log(b); // 4
+    console.log(a); // [1,2,3]
+
+    // 1. 읽기 함수와 쓰기 함수로 분리하기
+
+    // - 읽기함수
+    function last_element(array){
+        return array[-1];
+    }
+
+    // - 쓰기함수, copy_on_write 적용
+    function drop_last(array){
+        var copy_pop = array.slice();
+        copy_pop.pop();
+        return copy_pop;
+    }
+
+    // 2-1. 값 두개를 리턴하는 함수로 만들기
+    function pop(array){
+        var copy_pop = array.slice();
+        var last = copy_pop.pop();
+        return {
+            last: last,
+            array: copy_pop
+        };
+    }
+
+    // 2-2. 값 두개를 리턴하는 함수로 만들기(읽기/쓰기 분리함수 사용)
+    function pop(array){
+        return {
+            last: last_element(array),
+            array: drop_last(array)
+        };
+    }
+
+</script>
+</html>

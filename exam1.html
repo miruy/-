@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+
+<script>
+
+    /* 이메일 리스트에 연락처 추가 */
+
+    // 이메일 목록, 전역변수, 액션
+    var mailing_list = [];
+
+    // 이메일 목록에 연락처 추가
+    function add_contact(mailing_list, email) {
+        var new_email = mailing_list.slice();
+        new_email.push(email);
+        return new_email;
+    }
+
+    // 이메일 입력 양식을 보내는 함수
+    function submit_form_handler(event) {
+        var form = event.target;
+        var email = form.element["email"].value;
+        mailing_list = add_contact(mailing_list, email);
+    }
+
+</script>
+</html>
